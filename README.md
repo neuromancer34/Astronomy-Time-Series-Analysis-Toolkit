@@ -19,7 +19,7 @@ This is a first version. It covers the core workflow end to end:
 | Visualize raw and phase-folded light curves, periodograms, and ACFs | `plotting.py` |
 
 Not yet implemented: FITS file support, multi-band light curves, transit
-fitting. These are reasonable next steps once the basics above are solid.
+fitting.
 
 ## Installation
 
