@@ -1,33 +1,33 @@
-[build-system]
-requires = ["setuptools>=61.0.0"]
-build-backend = "setuptools.build_meta"
-
 [project]
 name = "astrotime"
 version = "0.1.0"
-description = "An Astronomy Time-Series Analysis Toolkit"
+description = "A small toolkit for loading, visualizing, and analyzing astronomical light curves"
 readme = "README.md"
-requires-python = ">=3.9"
 license = { text = "MIT" }
-authors = [{ name = "Pulkit, Kartik and Sheetal" }]
-
+requires-python = ">=3.10"
+authors = [
+    { name = "Neuromancer" },
+    { name = "Sheetal", email = "Sheetal7040@users.noreply.github.com" },
+]
 dependencies = [
-    "numpy>=1.22.0",
-    "pandas>=1.4.0",
-    "matplotlib>=3.5.0",
-    "astropy>=5.0.0",
+    "numpy>=1.24",
+    "pandas>=2.0",
+    "astropy>=5.3",
+    "matplotlib>=3.7",
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7.0.0", "black>=23.0.0", "pandas-stubs>=2.2.2.240807"]
+dev = [
+    "pytest>=7.4",
+    "pytest-cov>=4.1",
+]
 
-[tool.setuptools.packages.find]
-where = ["."]
-include = ["astrotime*"]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
 
-[tool.black]
-line-length = 88
-target-version = ["py39"]
+[tool.hatch.build.targets.wheel]
+packages = ["astrotime"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

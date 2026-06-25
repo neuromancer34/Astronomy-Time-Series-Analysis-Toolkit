@@ -1,5 +1,29 @@
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.egg-info/
+*.egg
+build/
+dist/
+
+# Virtual environments
 .venv/
-*.egg-info
-uv.lock
+venv/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Editors
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Downloaded data (from examples/download_tess_data.py)
+examples/data/
