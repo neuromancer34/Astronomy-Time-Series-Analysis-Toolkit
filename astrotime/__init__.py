@@ -3,3 +3,4 @@ from .loader import load_lightcurve
 from .plotting import plot_lightcurve
 from .periodogram import compute_lombscargle, find_best_period, plot_periodogram
 from .phasefold import phase_fold, plot_fold
+from .autocorrelation import compute_acf, find_acf_peaks, estimate_timescale, plot_acf
