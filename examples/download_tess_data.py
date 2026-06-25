@@ -1,10 +1,14 @@
 import lightkurve as lk
 
-Data_search = lk.search_lightcurve("TIC 25155310", mission="TESS")
-#print(Data_search)
+Data_search = lk.search_lightcurve("RR Lyrae", mission="TESS")
+print(Data_search)
 
-light_curve = Data_search[0].download()
-#print(light_curve)
+if len(Data_search) == 0:
+    print("No TESS light curve found for this traget")
+else :
+    light_curve = Data_search[0].download()
+    #print(light_curve)
+
 
 # Now Coverting this data into a csv file 
 

@@ -71,7 +71,7 @@ def find_best_period(periods, power):
     return periods[idx], power[idx]
 
 
-def plot_periodogram(periods, power, best_period=None):
+def plot_periodogram(periods, power, best_period=None, show=True):
     """
     Input Parameters:
     periods : array like Period grid.
