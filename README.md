@@ -79,10 +79,10 @@ astrotime/
 │   ├── lightcurve.py    # LightCurve data class
 │   ├── loader.py         # file -> LightCurve
 │   ├── statistics.py     # descriptive statistics
-│   ├── periodogram.py    # Lomb-Scargle period estimation (planned)
-│   ├── autocorrelation.py # autocorrelation period estimation (planned)
-│   ├── phasefold.py      # phase-folding (planned)
-│   └── plotting.py       # visualization (planned)
+│   ├── periodogram.py    # Lomb-Scargle period estimation
+│   ├── autocorrelation.py # autocorrelation period estimation
+│   ├── phasefold.py      # phase-folding
+│   └── plotting.py       # visualization
 ├── tests/               # automated tests (pytest)
 ├── examples/            # example/demo scripts, incl. TESS data download
 ├── pyproject.toml       # package metadata + dependencies
