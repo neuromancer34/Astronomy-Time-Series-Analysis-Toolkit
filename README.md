@@ -1,5 +1,7 @@
 # astrotime
 
+[![tests](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml)
+
 A small Python toolkit for loading, visualizing, and analyzing astronomical
 light curves. Built as a Code/Astro workshop project.
 
