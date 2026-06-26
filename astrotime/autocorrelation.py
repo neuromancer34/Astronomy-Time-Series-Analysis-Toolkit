@@ -108,7 +108,7 @@ def estimate_timescale(lags, peaks, properties, min_period_days=0):
 
     return timescale
 
-def plot_acf(lags, acf, peaks):
+def plot_acf(lags, acf, peaks, show=True):
     """
     Plots the autocorrelation function (ACF) along with the identified peaks.
     
