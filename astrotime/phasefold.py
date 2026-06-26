@@ -28,7 +28,7 @@ def phase_fold(time, flux, period, t0=None):
     if t0 is None:
         t0 = time.min()
 
-    phase = ((time - t0) % period /period)
+    phase = ((time - t0) % period / period)
     sort_idx = np.argsort(phase)
     phase = phase[sort_idx]
     folded_flux = flux[sort_idx]
