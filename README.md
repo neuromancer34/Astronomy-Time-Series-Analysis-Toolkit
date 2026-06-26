@@ -7,7 +7,7 @@
 
 A small Python toolkit for loading, visualizing, and analyzing astronomical
 light curves — the brightness of a star or other object measured over time.
-Built as a [Code/Astro](https://codeastro.org/) workshop project.
+Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop project.
 
 | Capability | Module |
 |---|---|
@@ -101,29 +101,6 @@ astrotime/
 ├── LICENSE
 └── README.md
 ```
-
-## Design notes
-
-These build on each module's original design — see
-[CONTRIBUTORS.md](CONTRIBUTORS.md).
-
-- **`LightCurve` is immutable.** Operations like `phase_fold` return a *new*
-  instance rather than mutating the one you pass in.
-- **`flux_err` always exists**, even as zeros, so no function needs to
-  special-case missing uncertainty.
-- **Two independent period-finders are included on purpose.** Lomb-Scargle
-  and autocorrelation make different assumptions; agreement is a good sign,
-  disagreement is worth investigating.
-- **`compute_periodogram` uses astropy's `autopower`** (`samples_per_peak`)
-  rather than a frequency grid evenly spaced in period — an evenly-spaced
-  grid can step over a true short period on a wide search range; `autopower`
-  adapts grid density to peak width instead.
-- **`phase_fold` defaults `t0` to the light curve's first observation**, not
-  a fixed `0.0`. This makes the folded shape invariant to absolute time origin. 
-  Pass `t0` explicitly only to align phase 0 with a known physical event (e.g. a transit center).
-- **`compute_autocorrelation` resamples onto a uniform time grid first.**
-  Computing the ACF directly on irregular timestamps mislabels the lag axis
-  and gives wrong answers on real, gappy telescope data.
 
 ## Troubleshooting
 
