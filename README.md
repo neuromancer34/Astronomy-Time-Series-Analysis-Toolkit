@@ -1,5 +1,4 @@
-# Astronomy Time-Series Analysis Toolkit
-**Package name:** `astrotime`
+# astrotime
 
 [![tests](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml)
 [![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
@@ -8,7 +7,7 @@
 
 A small Python toolkit for loading, visualizing, and analyzing astronomical
 light curves — the brightness of a star or other object measured over time.
-Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop project.
+Built as a [Code/Astro](https://codeastro.org/) workshop project.
 
 | Capability | Module |
 |---|---|
