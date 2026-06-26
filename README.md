@@ -1,1 +1,144 @@
-# Astronomy-Time-Series-Analysis-Toolkit
+# Astronomy Time-Series Analysis Toolkit
+**Package name:** `astrotime`
+
+[![tests](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml)
+[![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
+[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
+
+A small Python toolkit for loading, visualizing, and analyzing astronomical
+light curves — the brightness of a star or other object measured over time.
+Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop project.
+
+| Capability | Module |
+|---|---|
+| Load a light curve from CSV | `loader.py` |
+| Store time/flux/uncertainty + basic statistics (mean, median, std, RMS, amplitude) | `lightcurve.py` |
+| Estimate period via Lomb-Scargle | `periodogram.py` |
+| Estimate period via autocorrelation (independent cross-check) | `autocorrelation.py` |
+| Phase-fold on a known period | `phasefold.py` |
+| Visualize raw/folded light curves, periodograms, and ACFs | `plotting.py` |
+
+**Not yet implemented:** FITS support, multi-band light curves, transit fitting.
+
+## Installation
+
+Requires **Python 3.10+**. This project uses [`uv`](https://docs.astral.sh/uv/), which manages the
+Python environment and dependencies for you — no manual virtual environment needed.
+
+**Install uv**, if you don't have it:
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh        # macOS / Linux
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"  # Windows
+```
+Restart your terminal afterward, then confirm with `uv --version`.
+
+**Clone and install:**
+```bash
+git clone https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit.git
+cd Astronomy-Time-Series-Analysis-Toolkit
+uv sync
+```
+That's it. Run any command with `uv run <command>` (e.g. `uv run python`,
+`uv run pytest`) and it executes inside the correct environment automatically.
+
+<details>
+<summary>Prefer plain pip?</summary>
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate      # macOS/Linux
+.venv\Scripts\activate         # Windows
+pip install -e ".[dev]"
+```
+Then drop `uv run` from any command below.
+</details>
+
+## Quickstart
+
+```python
+from astrotime import load_csv, compute_periodogram, phase_fold, plot_phase_curve
+
+lc = load_csv("my_lightcurve.csv")  # expects columns: time, flux, flux_err
+print(lc.summary())
+
+result = compute_periodogram(lc)
+folded = phase_fold(lc, period=result.best_period)
+plot_phase_curve(folded)
+```
+
+Run with `uv run python your_file.py`. For a full walkthrough with real TESS
+data, open `examples/quickstart.ipynb` (`uv run jupyter notebook examples/quickstart.ipynb`);
+to fetch that data first, see `examples/download_tess_data.py`.
+
+## Testing
+
+```bash
+uv sync --extra dev
+uv run pytest        # add -v for per-test detail
+```
+Expect `48 passed`. These same tests run automatically on every push (see the
+badge above).
+
+## Project structure
+
+```
+astrotime/
+├── .github/workflows/test.yml   # CI
+├── astrotime/                   # the package
+│   ├── __init__.py              #   public API
+│   ├── lightcurve.py            #   LightCurve container + statistics
+│   ├── loader.py                #   CSV loading
+│   ├── periodogram.py           #   Lomb-Scargle period estimation
+│   ├── phasefold.py             #   phase-folding
+│   ├── autocorrelation.py       #   period estimation via ACF
+│   └── plotting.py              #   visualization
+├── tests/                       # one file per module above
+├── examples/
+│   ├── quickstart.ipynb
+│   └── download_tess_data.py
+├── pyproject.toml
+├── CONTRIBUTORS.md
+├── LICENSE
+└── README.md
+```
+
+## Design notes
+
+These build on each module's original design — see
+[CONTRIBUTORS.md](CONTRIBUTORS.md).
+
+- **`LightCurve` is immutable.** Operations like `phase_fold` return a *new*
+  instance rather than mutating the one you pass in.
+- **`flux_err` always exists**, even as zeros, so no function needs to
+  special-case missing uncertainty.
+- **Two independent period-finders are included on purpose.** Lomb-Scargle
+  and autocorrelation make different assumptions; agreement is a good sign,
+  disagreement is worth investigating.
+- **`compute_periodogram` uses astropy's `autopower`** (`samples_per_peak`)
+  rather than a frequency grid evenly spaced in period — an evenly-spaced
+  grid can step over a true short period on a wide search range; `autopower`
+  adapts grid density to peak width instead.
+- **`phase_fold` defaults `t0` to the light curve's first observation**, not
+  a fixed `0.0`. This makes the folded shape invariant to absolute time origin. 
+  Pass `t0` explicitly only to align phase 0 with a known physical event (e.g. a transit center).
+- **`compute_autocorrelation` resamples onto a uniform time grid first.**
+  Computing the ACF directly on irregular timestamps mislabels the lag axis
+  and gives wrong answers on real, gappy telescope data.
+
+## Troubleshooting
+
+- **`uv: command not found`** — restart your terminal after installing.
+- **`uv run pytest` can't find pytest** — run `uv sync --extra dev` first
+  (pytest is a dev-only dependency).
+- **`load_csv` raises `KeyError`** — it expects columns named `time`,
+  `flux`, `flux_err`. Pass alternatives: `load_csv(path, time_col="MJD")`.
+- **Anything else** — open an issue with the exact command and full error.
+
+## Contributors
+
+See [CONTRIBUTORS.md](CONTRIBUTORS.md).
+
+## License
+
+MIT — see [LICENSE](LICENSE).

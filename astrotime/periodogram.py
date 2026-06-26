@@ -1,98 +1,114 @@
+"""Estimate periods in unevenly-sampled time series via Lomb-Scargle.
+
+Based on Sheetal's original periodogram.py. Uses astropy's LombScargle
+implementation rather than a custom one, since real telescope data is
+rarely evenly sampled (weather, downlink gaps, etc.) and Lomb-Scargle
+handles that natively without requiring interpolation. See CONTRIBUTORS.md.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+
 import numpy as np
-import matplotlib.pyplot as plt    
 from astropy.timeseries import LombScargle
 
-def compute_lombscargle(time, flux, min_period=None, max_period=None, samples_per_peak=10):
+from astrotime.lightcurve import LightCurve
+
+
+@dataclass(frozen=True)
+class PeriodogramResult:
+    """The output of a Lomb-Scargle period search.
+
+    Attributes
+    ----------
+    frequency : np.ndarray
+        Frequencies the periodogram was evaluated at.
+    power : np.ndarray
+        Lomb-Scargle power at each frequency. Higher = more likely to
+        be the true period of a periodic signal.
+    best_period : float
+        The period (1 / frequency) at maximum power -- the toolkit's
+        single best guess at the dominant periodicity.
+    best_power : float
+        The power value at best_period, useful as a rough significance
+        check: a low peak power means "no convincing periodicity found,"
+        not "here is a confident answer."
     """
-    Input Parameters :
-    time : array-like observation times.
-    flux : array-like flux values coresspomding to the observation times.
-    min_period : float, Minimum period to search (optional).
-    max_period : float, Maximum period to search (optional).
-    samples_per_peak : int, Sampling density of the frequency grid (optional).
 
-    Returns : 
-    periods : np.ndarray Period grid.
-    power : np.ndarray Lomb-Scargle power at each period.
+    frequency: np.ndarray
+    power: np.ndarray
+    best_period: float
+    best_power: float
+
+
+def compute_periodogram(
+    lc: LightCurve,
+    min_period: float | None = None,
+    max_period: float | None = None,
+    samples_per_peak: int = 10,
+) -> PeriodogramResult:
+    """Run a Lomb-Scargle periodogram on a LightCurve.
+
+    Parameters
+    ----------
+    lc : LightCurve
+    min_period, max_period : float, optional
+        Bounds on the periods to search, in the same units as
+        lc.time. If not given, defaults are chosen from the data
+        itself: min_period defaults to roughly twice the median time
+        spacing (you can't reliably detect a period shorter than your
+        sampling cadence -- this is the Nyquist-like limit for
+        irregular sampling), and max_period defaults to half the
+        total time baseline (you need to see at least two cycles to
+        call something periodic with any confidence).
+    samples_per_peak : int
+        Frequency-grid points per periodogram peak, passed to
+        astropy's LombScargle.autopower. This adapts grid density to
+        peak width (narrower at short periods), which matters more
+        than it sounds — see the README's design notes for why a
+        plain evenly-spaced grid can miss a true short period.
+
+    Returns
+    -------
+    PeriodogramResult
     """
-    time = np.asarray(time)
-    flux = np.asarray(flux)
-    # Removing the Nan values from the array 
-    mask = np.isfinite(time) & np.isfinite(flux)
-    time = time[mask] 
-    flux = flux[mask]
-
-    if len(time)< 3:
-        raise ValueError("Not enough valid data pounts to compute periodogram")
-
-    flux = flux - np.mean(flux)
-
-    baseline = time.max()-time.min()
-    if baseline <= 0:
-        raise ValueError("Time array vmust span a non zero baseline")
-    
-
     if min_period is None:
-        min_period = 0.05
+        median_dt = float(np.median(np.diff(np.sort(lc.time))))
+        min_period = 2 * median_dt
     if max_period is None:
-        max_period = baseline / 2
+        max_period = lc.duration() / 2
 
-    min_frequency = 1.0 / max_period
-    max_frequency = 1.0/ min_period
+    if min_period >= max_period:
+        raise ValueError(
+            f"min_period ({min_period}) must be less than max_period "
+            f"({max_period}). This usually means the light curve's time "
+            "baseline is too short for the default bounds -- pass "
+            "explicit min_period/max_period."
+        )
 
-    frequency, power = LombScargle(time,flux).autopower(minimum_frequency= min_frequency, 
-    maximum_frequency = max_frequency, samples_per_peak = samples_per_peak)
+    # astropy expects flux_err of zero to be treated as "no weighting" --
+    # passing actual zeros would cause a division-by-zero inside its
+    # weighted fit, so we only pass dy when we have real uncertainties.
+    has_errors = np.any(lc.flux_err > 0)
+    dy = lc.flux_err if has_errors else None
 
-    periods = 1.0/frequency
-    sort_idx = np.argsort(periods)
-    periods = periods[sort_idx]
-    power = power[sort_idx]
-    return periods, power
+    ls = LombScargle(lc.time, lc.flux, dy)
+    frequency, power = ls.autopower(
+        minimum_frequency=1.0 / max_period,
+        maximum_frequency=1.0 / min_period,
+        samples_per_peak=samples_per_peak,
+    )
 
+    periods = 1.0 / frequency
 
-def find_best_period(periods, power):
-    """
-    Input Parameters:
-    periods: Period grid
-    power: LombScargle power values
+    best_idx = int(np.argmax(power))
+    best_period = float(periods[best_idx])
+    best_power = float(power[best_idx])
 
-    Returns:
-    best_period : float, Period with maximum Power
-    best_power : float, Maximum LombScargle power.
-    """
-
-    periods = np.asarray(periods)
-    power = np.asarray(power)
-
-    if len(periods) == 0 or len(power) == 0 :
-        raise ValueError("Periods and Power arrays must not be empty")
-
-    idx = np.argmax(power)
-    return periods[idx], power[idx]
-
-
-def plot_periodogram(periods, power, best_period=None, show=True):
-    """
-    Input Parameters:
-    periods : array like Period grid.
-    power : array like LombScargle power values
-    best_period : Best period to highlighton the plot (optional)
-    
-    Returns :
-    fig : Figure
-    """
-    plt.figure(figsize=(10,5))
-    plt.plot(periods,power,lw=1.5,label="Lomb-Scargle Periodogram")
-
-    if best_period is not None:
-        plt.axvline(best_period,linestyle=":",color='r', label=f"Best Period = {best_period:.4f} d")
-        
-
-    plt.xlabel("Period(days)")
-    plt.ylabel("Power")
-    plt.title("Lomb-Scargle Periodogram")
-    plt.legend()
-    plt.grid()
-    plt.show()
-
-
+    return PeriodogramResult(
+        frequency=frequency,
+        power=power,
+        best_period=best_period,
+        best_power=best_power,
+    )

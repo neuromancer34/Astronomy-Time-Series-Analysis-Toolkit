@@ -9,7 +9,7 @@ you handed it.
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 
 import numpy as np
 
@@ -82,25 +82,12 @@ class LightCurve:
     def __len__(self) -> int:
         return len(self.time)
 
-    # --- basic statistics -------------------------------------------------
-    # These are deliberately simple. The goal of v1 is correct, readable
-    # basics -- not, e.g., outlier-robust or sigma-clipped statistics.
-
     def mean_flux(self) -> float:
         """Arithmetic mean of the flux values."""
         return float(np.mean(self.flux))
 
     def median_flux(self) -> float:
-        """Median of the flux values.
-
-        Unlike the mean, the median is robust to outliers -- a single
-        anomalously bright or faint point (a cosmic ray hit, a bad
-        calibration frame) can shift the mean noticeably but barely
-        moves the median. Useful as a sanity check: if mean_flux()
-        and median_flux() disagree a lot, that's a sign your light
-        curve has outliers worth a closer look before you trust other
-        statistics computed from it.
-        """
+        """Median of the flux values. Robust to outliers, unlike the mean."""
         return float(np.median(self.flux))
 
     def std_flux(self) -> float:
@@ -108,38 +95,20 @@ class LightCurve:
         return float(np.std(self.flux))
 
     def rms_flux(self) -> float:
-        """Root-mean-square (RMS) variability of the flux values.
+        """Root-mean-square (RMS) variability: sqrt(mean((flux - mean_flux)^2)).
 
-        Defined as sqrt(mean((flux - mean_flux)^2)) -- this is
-        mathematically the population standard deviation (ddof=0), so
-        right now rms_flux() and std_flux() will always return the
-        same number. They're kept as separate methods on purpose:
-        "RMS variability" and "standard deviation" are different
-        concepts that happen to coincide for this exact formula, and
-        if std_flux() is ever changed (e.g. to ddof=1, the sample
-        standard deviation, which is a very common edit) the two
-        should NOT change together. RMS variability is specifically
-        defined here as population-style (1/N), regardless of what
-        std_flux() does.
+        Currently equals std_flux() (both ddof=0), but kept as a
+        separate method since the two are conceptually distinct and
+        shouldn't change together if std_flux() is ever edited.
         """
         return float(np.sqrt(np.mean((self.flux - self.mean_flux()) ** 2)))
 
     def amplitude(self) -> float:
-        """Peak-to-peak flux range: max(flux) - min(flux).
-
-        A quick-and-dirty proxy for "how much does this thing vary."
-        Sensitive to single outliers -- fine for a first look, not a
-        substitute for a proper variability statistic later.
-        """
+        """Peak-to-peak flux range: max(flux) - min(flux)."""
         return float(np.max(self.flux) - np.min(self.flux))
 
     def duration(self) -> float:
-        """Total time baseline: max(time) - min(time).
-
-        Matters for period-finding: you generally can't trust a
-        Lomb-Scargle period estimate longer than roughly half the
-        baseline, since you haven't observed even two full cycles.
-        """
+        """Total time baseline: max(time) - min(time)."""
         return float(np.max(self.time) - np.min(self.time))
 
     def summary(self) -> dict[str, float]:
