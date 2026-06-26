@@ -1,13 +1,4 @@
-"""Phase-fold a light curve on a known or estimated period.
-
-Based on Sheetal's original phasefold.py. Phase-folding takes every
-observation's timestamp and replaces it with where in the cycle (0 to
-1) that observation falls, given a period. If the period is right,
-scattered-looking data collapses into a clean repeating shape -- this
-is the classic "does this period actually explain the data" sanity
-check, and it's usually the next thing you'd do right after
-compute_periodogram gives you a candidate period. See CONTRIBUTORS.md.
-"""
+"""Phase-fold a light curve on a known or estimated period."""
 
 from __future__ import annotations
 

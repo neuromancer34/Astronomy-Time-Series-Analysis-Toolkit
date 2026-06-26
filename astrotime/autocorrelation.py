@@ -8,9 +8,6 @@ not just sinusoids) but does assume even time sampling, so the light
 curve is resampled onto a uniform grid first -- see README design notes
 for why skipping that step gives wrong answers on real, gappy data.
 
-Based on Pulkit's original autocorrelation.py; this version adds
-resampling onto a uniform grid for correctness on irregularly-sampled
-data. See CONTRIBUTORS.md.
 """
 
 from __future__ import annotations

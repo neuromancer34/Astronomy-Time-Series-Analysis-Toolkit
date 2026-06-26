@@ -1,13 +1,4 @@
-"""Visualize light curves and the outputs of the analysis modules.
-
-A joint effort across the team (see CONTRIBUTORS.md). Every function
-here takes a matplotlib Axes as an optional argument and returns the
-Axes it drew on, rather than calling plt.show() itself. This is a
-deliberate convention, not an accident: it lets you compose multiple
-plots into one figure (e.g. raw + folded side by side) and it keeps
-this module usable in a script, a notebook, or a test, without
-forcing a GUI window to pop up in any of them.
-"""
+"""Visualize light curves and the outputs of the analysis modules."""
 
 from __future__ import annotations
 
@@ -48,7 +39,9 @@ def plot_lightcurve(lc: LightCurve, ax: Axes | None = None, **kwargs) -> Axes:
     return ax
 
 
-def plot_phase_curve(lc: LightCurve, ax: Axes | None = None, repeat_cycle: bool = True, **kwargs) -> Axes:
+def plot_phase_curve(
+    lc: LightCurve, ax: Axes | None = None, repeat_cycle: bool = True, **kwargs
+) -> Axes:
     """Plot a phase-folded light curve.
 
     This is plot_lightcurve()'s sibling for folded data specifically.
@@ -108,7 +101,9 @@ def plot_phase_curve(lc: LightCurve, ax: Axes | None = None, repeat_cycle: bool 
     return ax
 
 
-def plot_periodogram(result: PeriodogramResult, ax: Axes | None = None, **kwargs) -> Axes:
+def plot_periodogram(
+    result: PeriodogramResult, ax: Axes | None = None, **kwargs
+) -> Axes:
     """Plot Lomb-Scargle power vs. period, with the best period marked.
 
     Parameters

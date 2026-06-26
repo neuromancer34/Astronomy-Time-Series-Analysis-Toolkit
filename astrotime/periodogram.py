@@ -1,10 +1,4 @@
-"""Estimate periods in unevenly-sampled time series via Lomb-Scargle.
-
-Based on Sheetal's original periodogram.py. Uses astropy's LombScargle
-implementation rather than a custom one, since real telescope data is
-rarely evenly sampled (weather, downlink gaps, etc.) and Lomb-Scargle
-handles that natively without requiring interpolation. See CONTRIBUTORS.md.
-"""
+"""Estimate periods in unevenly-sampled time series via Lomb-Scargle."""
 
 from __future__ import annotations
 
