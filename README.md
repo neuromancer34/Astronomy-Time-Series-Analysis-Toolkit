@@ -2,12 +2,11 @@
 
 [![tests](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml)
 [![A rectangular badge, half black half purple containing the text made at Code Astro](https://img.shields.io/badge/Made%20at-Code/Astro-blueviolet.svg)](https://semaphorep.github.io/codeastro/)
-[![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
 A small Python toolkit for loading, visualizing, and analyzing astronomical
-light curves — the brightness of a star or other object measured over time.
-Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop project.
+light curves.
+Built as a [Code/Astro 2026](https://semaphorep.github.io/codeastro/) workshop project.
 
 | Capability | Module |
 |---|---|
@@ -18,7 +17,7 @@ Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop projec
 | Phase-fold on a known period | `phasefold.py` |
 | Visualize raw/folded light curves, periodograms, and ACFs | `plotting.py` |
 
-**Not yet implemented:** FITS support, multi-band light curves, transit fitting.
+**Not yet implemented:** FITS support, multi-band light curves.
 
 ## Installation
 
@@ -70,15 +69,6 @@ Run with `uv run python your_file.py`. For a full walkthrough with real TESS
 data, open `examples/quickstart.ipynb` (`uv run jupyter notebook examples/quickstart.ipynb`);
 to fetch that data first, see `examples/download_tess_data.py`.
 
-## Testing
-
-```bash
-uv sync --extra dev
-uv run pytest        # add -v for per-test detail
-```
-Expect `48 passed`. These same tests run automatically on every push (see the
-badge above).
-
 ## Project structure
 
 ```
@@ -105,8 +95,6 @@ astrotime/
 ## Troubleshooting
 
 - **`uv: command not found`** — restart your terminal after installing.
-- **`uv run pytest` can't find pytest** — run `uv sync --extra dev` first
-  (pytest is a dev-only dependency).
 - **`load_csv` raises `KeyError`** — it expects columns named `time`,
   `flux`, `flux_err`. Pass alternatives: `load_csv(path, time_col="MJD")`.
 - **Anything else** — open an issue with the exact command and full error.
