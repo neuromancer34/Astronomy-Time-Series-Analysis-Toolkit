@@ -7,7 +7,7 @@
 
 A small Python toolkit for loading, visualizing, and analyzing astronomical
 light curves — the brightness of a star or other object measured over time.
-Built as a [Code/Astro](https://codeastro.org/) workshop project.
+Built as a [Code/Astro](https://semaphorep.github.io/codeastro/) workshop project.
 
 | Capability | Module |
 |---|---|
