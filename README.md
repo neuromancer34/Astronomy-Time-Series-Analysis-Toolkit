@@ -1,6 +1,5 @@
-# astrotime
-
-[![tests](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml/badge.svg)](https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit/actions/workflows/test.yml)
+# Astronomy Time-Series Analysis Toolkit
+**Package name:** `astrotime`
 
 A small Python toolkit for loading, visualizing, and analyzing astronomical
 light curves. Built as a Code/Astro workshop project.
@@ -12,60 +11,94 @@ This is a first version. It covers the core workflow end to end:
 | Capability | Module |
 |---|---|
 | Load a light curve from CSV | `loader.py` |
-| Store time/flux/flux_err + basic statistics (mean, median, std, RMS, amplitude) | `lightcurve.py` |
-| Estimate the period via Lomb-Scargle | `periodogram.py` |
-| Estimate the period via autocorrelation | `autocorrelation.py` |
-| Phase-fold on a period | `phasefold.py` |
-| Visualize raw and phase-folded light curves, periodograms, and ACFs | `plotting.py` |
+| Plot raw light curves | `plotting.py` |
+| Store time/flux/flux_err + basic statistics (mean, median, std, RMS, amplitude) | `statistics.py` |
+| Estimate the period via Lomb-Scargle + plotting of the Lomb-Scargle Periodogram | `periodogram.py` |
+| Estimate the period via autocorrelation + plotting of autocorrelation function peaks | `autocorrelation.py` |
+| Phase-fold on a period + plotting of Phase-fold | `phasefold.py` |
+
 
 Not yet implemented: FITS file support, multi-band light curves, transit
 fitting.
 
+
+## Repository Structure
+
+```text
+Astronomy-Time-Series-Analysis-Toolkit/
+├── astrotime/
+│   ├── loader.py
+│   ├── plotting.py
+│   ├── statistics.py
+│   ├── periodogram.py
+│   ├── autocorrelation.py
+│   └── phasefold.py
+│
+├── tests/
+│   ├── test_loader.py
+│   ├── test_plot.py
+│   ├── test_statistics.py
+│   ├── test_periodogram.py
+│   ├── test_autocorrelation.py
+│   └── test_phasefold.py
+│
+├── examples/
+├── README.md
+├── pyproject.toml
+├── requirements.txt
+└── .gitignore
+```
+
+
 ## Installation
 
 ```bash
-git clone https://github.com/neuromancer34/Astronomy-Time-Series-Analysis-Toolkit.git
+git clone https://github.com/Sheetal7040/Astronomy-Time-Series-Analysis-Toolkit.git
 cd Astronomy-Time-Series-Analysis-Toolkit
-uv sync
+pip install -e .
 ```
 
 ## Quickstart
 
-```python
-from astrotime import load_csv, compute_periodogram, phase_fold, plot_phase_curve
+The toolkit provides a modular workflow for astronomical time-series analysis:
 
-lc = load_csv("my_lightcurve.csv")  # expects columns: time, flux, flux_err
-print(lc.summary())  # mean, median, std, RMS, amplitude, duration
-
-result = compute_periodogram(lc)
-print(f"Best period: {result.best_period}")
-
-folded = phase_fold(lc, period=result.best_period)
-plot_phase_curve(folded)
-```
+1. Load a light-curve dataset from a CSV file.
+2. Visualize the raw light curve.
+3. Estimate the period using Lomb-Scargle periodogram.
+4. Validate the recovered period using phase folding.
+5. Perform additional analysis using the statistics and Autocorrelation modules.
 
 See `examples/quickstart.ipynb` for a full walkthrough with real TESS data,
 and `examples/download_tess_data.py` for fetching that data.
 
-## Design notes
+## Design Notes
 
-- `LightCurve` is an immutable dataclass. Operations like `phase_fold` return
-  a *new* `LightCurve` rather than modifying the one you pass in.
-- Every light curve always has a `flux_err` array, even if it's all zeros —
-  this keeps every function able to assume it exists, without special-casing
-  "no error data" everywhere.
-- The Lomb-Scargle periodogram (`periodogram.py`) and the autocorrelation
-  function (`autocorrelation.py`) are two independent ways to estimate a
-  period. They make different assumptions, so agreement between them is a
-  good sign; disagreement is worth investigating, not averaging away.
+- The toolkit follows a modular architecture, with each analysis task implemented as an independent Python module.
+- The main workflow consists of loading a light curve, visualization, period estimation using the Lomb–Scargle periodogram, and phase folding.
+- The Statistics and Autocorrelation modules operate independently on the input light-curve dataset and provide complementary analyses.
+- The project is packaged using `pyproject.toml`, making it easy to install, test, and extend.
+- Unit tests are provided for each module to help verify correctness and maintain code quality.
 
+  
 ## Development
 
 ```bash
-uv sync --extra dev
-uv run pytest
+pip install -e .
+pip install -e ".[dev]" 
+pytest
 ```
 
-## License
+## Future Work
 
-MIT — see `LICENSE`.
+- Support additional input formats such as FITS files.
+- Extend the toolkit to handle multi-band light curves.
+- Add more time-series analysis techniques and period-search algorithms.
+- Improve documentation with more examples and tutorials.
+- Publish the package on PyPI for easy installation.
+  
+  
+## Acknowledgements
+This project was developed as part of the Code/Astro 2026 Workshop by :
+-Kartik Gupta
+-Pulkit Sheoran
+-Sheetal
